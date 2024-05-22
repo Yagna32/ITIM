@@ -400,132 +400,218 @@ vgcreate --physicalextentsize 16M yagna /dev/vdd3
 lvcreate -l 20 -n logvol yagna
 ```
 **Explanation**: Creates a logical volume named `logvol` in the `yagna` volume group with 20 physical extents.
-Prac7 : 
-Do this in root workstation prac7
+**Prac7:**
 
-//check if httpd is running
-serive httpd status
+**Check if httpd is running:**
+```
+service httpd status
+```
 
-//install httpd service
+**Install httpd service:**
+```
 yum install httpd
+```
 
-//start httpd service
+**Start httpd service:**
+```
 service httpd start
+```
 
-//create a dir
+**Create a directory:**
+```
 mkdir /var/www/html/batch61
-touch index.html
-add  a line in index.html
-//get ip address 
-ifconfig
+touch /var/www/html/batch61/index.html
+```
+*Add a line in index.html to get IP address.*
 
-// get into configuration file
+**Get into configuration file:**
+```
 vim /etc/httpd/conf/httpd.conf
-//at the end of the configuration file
-NameVirtualHost ip_address:port //port is optional
-<VirtualHost ip_address>
-	DocumentRoot /var/www/html/batch61
-	ServerName virtualhost.21162101020.com
-</VirtualHost>
+```
+*At the end of the configuration file:*
+```
+NameVirtualHost ip_address:port
+DocumentRoot /var/www/html/batch61
+ServerName virtualhost.21162101020.com
+```
 
-//to add hosts 
+**To add hosts:**
+```
 vim /etc/hosts
-//add the host
+```
+*Add the host:*
+```
 ip_address batch61.com
+```
 
-restart httpd service
+**Restart httpd service:**
+```
+service httpd restart
+```
 
+*Add Directory configuration:*
+
+**Edit `/etc/httpd/conf/httpd.conf` or create `.htaccess` file:**
+```
 <Directory '/var/www/html/batch61'>
-	AuthType Basic
-	AuthName "Please enter the password"
-	AuthBasicProvider file 
-	AuthUserFile /etc/httpd/userpassword
-	AuthGroupFile /etc/httpd/usergroup
-	Require user user1 
-	//Require group cba
+    AuthType Basic
+    AuthName "Please enter the password"
+    AuthBasicProvider file
+    AuthUserFile /etc/httpd/userpassword
+    AuthGroupFile /etc/httpd/usergroup
+    Require user user1
+    #Require group cba
 </Directory>
+```
 
-restart httpd 
+**Restart httpd:**
+```
+service httpd restart
+```
 
-//add data in authentication file
+**Add data in authentication file:**
+```
 vim /var/www/html/batch61/.htaccess
+```
+```
 AuthType Basic
-	AuthName "Please enter the password"
-	AuthBasicProvider file 
-	AuthUserFile /etc/httpd/userpassword
-	Require user user1
-	AuthGroupFile /etc/httpd/usergroup
-	
-restart httpd
-//add user 
+AuthName "Please enter the password"
+AuthBasicProvider file
+AuthUserFile /etc/httpd/userpassword
+Require user user1
+AuthGroupFile /etc/httpd/usergroup
+```
+
+**Add users:**
+```
 htpasswd -c /etc/httpd/userpassword user1
 htpasswd /etc/httpd/userpassword user2
-htpasswd  /etc/httpd/userpassword user3
+htpasswd /etc/httpd/userpassword user3
+```
 
-
-//group
-vim  /etc/httpd/usergroup
+**Group:**
+```
+vim /etc/httpd/usergroup
+```
+*Add group and users:*
+```
 cba: user1 user2
+```
 
-Prac8
-to install mailx, postfix and dovecot:
+**Prac8:**
+
+**Install mailx, postfix, and dovecot:**
+```
 yum install mailx postfix dovecot
-to create users:
+```
+
+**Create users:**
+```
 useradd user1
-To give password:
+```
+
+**To set password for user1:**
+```
 passwd user1
+```
 
-main.cf configuration file : 
+**Main configuration file for postfix:**
+```
 /etc/postfix/main.cf
-send mail using :
+```
+
+**Send mail using sendmail:**
+```
 sendmail user@ac.in
+```
+**Prac9:**
 
-
-Prac9
-to get default zone:
+**To get default zone:**
+```
 firewall-cmd --get-default-zone
-to get status of firewall 
+```
+
+**To get status of firewall:**
+```
 firewall-cmd --state
-intsall httpd and mod_ssl
+```
+
+**Install httpd and mod_ssl:**
+```
 yum install httpd mod_ssl
-verify the status of nftables service is masked :
+```
+
+**Verify the status of nftables service is masked:**
+```
 systemctl status nftables
-verify the status of firewall service is enable:
+```
+
+**Verify the status of firewall service is enabled:**
+```
 systemctl status firewalld
-allow a port,so services running on that port is allowed in network.
-sudo firewall-cmd --zone=public --add-port=234/tcp --permanent
-to check configuration :
+```
+
+**Allow a port, so services running on that port are allowed in the network:**
+```
+firewall-cmd --zone=public --add-port=234/tcp --permanent
+```
+
+**To check configuration:**
+```
 firewall-cmd --list-all
-to block a service :
-sudo firewall-cmd --remove-service=cockpit --permanent
-to reload :
+```
+
+**To block a service:**
+```
+firewall-cmd --remove-service=cockpit --permanent
+```
+
+**To reload firewall settings:**
+```
 firewall-cmd --reload
-to disable firewall : 
+```
+
+**To disable firewall:**
+```
 systemctl disable firewalld
-to enable firewall :
+```
+
+**To enable firewall:**
+```
 systemctl enable firewalld
-to allow traffic from a specific IP address
+```
+
+**To allow traffic from a specific IP address:**
+```
 firewall-cmd --zone=public --add-source=192.168.1.100 --permanent
+```
 
-prac10:
+**Prac10:**
+
 For certificate and key generation, we need to install two services:
-mod_ssl and openssl (already did before).
-For ssl certificate and key here is the command for that :
-Openssl req -x509 -nodes -newkey rsa:2048 -keyout
-/var/www/html/prac10_yagna/yagna.key -out
-/var/www/html/prac10_yagna/yagna.crt
-Here in this command
--x509 is is a digital certificate that uses the widely accepted
-international X.
--newkey for generate newkey
-Rsa:2048 here rsa is an type of cryptosystem an 2048 is key size
--keyout path is for generate key in given path
+```
+mod_ssl and openssl
+```
 
-Added port 443 with ip
+For SSL certificate and key, here is the command for that:
+```
+openssl req -x509 -nodes -newkey rsa:2048 -keyout /var/www/html/prac10_yagna/yagna.key -out /var/www/html/prac10_yagna/yagna.crt
+```
+In this command:
+- `-x509` is a digital certificate that uses the widely accepted international X.
+- `-newkey` is for generating a new key.
+- `Rsa:2048` specifies RSA as the type of cryptosystem and 2048 as the key size.
+- `-keyout` is the path to generate the key.
+- `-out` is the path to generate the certificate.
+
+**Additional Configuration:**
+
+Added port 443 with IP:
+```
 SSLEngine on //set to on
 SSLCertificateFile /path/certificate //adding certificate
 SSLCertificateKeyFile /path/key //adding key
-
+```
 prac11
 Task 1: Create a user of your name and schedule a job to create a file which
 have the current date and time stored in it. The job should be executed on a
