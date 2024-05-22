@@ -1,194 +1,405 @@
-Prac1: 
-Install httpd service :
+### Prac1: 
+#### Install httpd service:
+```bash
 yum install httpd
-To start the httpd service :
-service : 
+```
+#### To start the httpd service:
+```bash
+# Using service:
 service httpd start
+
+# Using systemctl:
 systemctl enable httpd.start
-Home dir of httpd service :
+```
+#### Home dir of httpd service:
+```
 /var/www/html
-
-Configuration file of httpd service :
+```
+#### Configuration file of httpd service:
+```
 /etc/httpd/conf/httpd.conf
-
-Redirect : (in httpd.conf)
+```
+#### Redirect (in httpd.conf):
+```
 Redirect permanent /redirectFrom http://localhost/redirectTo
-permanent means long term usage.
+```
+*permanent* means long term usage.
 
-restart httpd service: 
+#### Restart httpd service: 
+```bash
 service httpd restart
-
-Alias (in httpd.conf) :
+```
+#### Alias (in httpd.conf):
+```
 Alias /pathToShowOn /var/www/html/FolderToBeShown
+```
 Shows content of a different folder URI without redirecting 
 
-Prac2 : 
-Set ACL RULES for group consultants for /shares/content:
-setfacl -Rm g:consultants:rwx /shares/content.
-ACL Rules for user consultant1:
-setfacl -Rm u:consultant1:- /shares/content (no permissions)
-To set default ACL rules
+### Prac2: 
+#### Set ACL RULES for group consultants for /shares/content:
+```bash
+setfacl -Rm g:consultants:rwx /shares/content
+```
+#### ACL Rules for user consultant1:
+```bash
+setfacl -Rm u:consultant1:- /shares/content  # no permissions
+```
+#### To set default ACL rules:
+```bash
 setfacl -m d:u:consultant1:- /shares/content
-To see all ACL entries :
+```
+#### To see all ACL entries:
+```bash
 getfacl /shares/content
-1. Use the *chgrp* command to recursively update group ownership on the directory and its contents.
-    
-    
-    [root@serverb ~]# **`chgrp -R managers /shares/cases`**
-    
-    
-2. Use the *chmod* command to update the set-GID flag on the directory.
-    
-    
-    [root@serverb ~]# **`chmod g+s /shares/cases`**
-    
-    
-3. Use *chmod* to update all existing file permissions to rw for owner and group.
-    
-    
-    [root@serverb ~]# **`chmod 660 /shares/cases/*`**
-    
-Use *setfacl* to recursively update the existing cases directory and its contents. Grant the contractors group read, write, and conditional execute permissions.
-
-
+```
+#### 1. Use the **chgrp** command to recursively update group ownership on the directory and its contents.
+```bash
+[root@serverb ~]# **`chgrp -R managers /shares/cases`**
+```
+#### 2. Use the **chmod** command to update the `set-GID` flag on the directory.
+```bash
+[root@serverb ~]# **`chmod g+s /shares/cases`**
+```
+#### 3. Use **chmod** to update all existing file permissions to `rw` for owner and group.
+```bash
+[root@serverb ~]# **`chmod 660 /shares/cases/*`**
+```
+Use **setfacl** to recursively update the existing `cases` directory and its contents. Grant the `contractors` group read, write, and conditional execute permissions.
+```bash
 [root@serverb ~]# setfacl -Rm g:contractors:rwX /shares/cases
-
-Prac3:
-list block devices attached to the system: 
+```
+### Prac3:
+#### List block devices attached to the system:
+```bash
 lsblk
-Creating a new partition :
+```
+#### Creating a new partition:
+```bash
 fdisk /dev/vdb
-Assign file system to partition:
+```
+#### Assign file system to partition:
+```bash
 mkfs.ext4 /dev/vdb1
-assigning mount point:
+```
+#### Assigning mount point:
+```bash
 mount /dev/vdb1 /folderPath
-display information about available block devices and
-their associated attributes, such as UUIDs (Universally Unique
-Identifiers) and file system types, on a Linux system.:
+```
+#### Display information about available block devices and their associated attributes, such as UUIDs (Universally Unique Identifiers) and file system types, on a Linux system:
+```bash
 blkid
-reboot the server:
+```
+#### Reboot the server:
+```bash
 reboot
-fstab file path: 
+```
+#### fstab file path: 
+```
 /etc/fstab
-unmount using :
+```
+#### Unmount using:
+```bash
 umount /dev/vdb1 /folderPath
-prac4: 
-to use partition as swap memory
+```
+### Prac4: 
+#### To use partition as swap memory:
+```bash
 mkswap /dev/vdb1
-to use swap memory : 
+```
+#### To use swap memory:
+```bash
 swapon
-check if swap memory is created using :
+```
+#### Check if swap memory is created using:
+```bash
 lsblk or free
-delete swap memory:
+```
+#### Delete swap memory:
+```bash
 swapoff /dev/vdb1
-
-prac5:
-//creata pyhscial volume using 3 disks vdb1,2,3
+```
+### Prac5:
+#### Create a physical volume using 3 disks vdb1,2,3
+```bash
 pvcreate /dev/vdb1 /dev/vdb2 /dev/vdb3
-
-//to display if physical volume is created
+```
+#### To display if a physical volume is created:
+```bash
 pvdisplay
-
-//to create volume group (vggroup is the name of group anything can be given)
+```
+#### To create a volume group (vggroup is the name of group anything can be given):
+```bash
 vgcreate vggroup /dev/vdb1 /dev/vdb1 /dev/vdb1
-
-//now check if group is created check vgname in
+```
+#### Now check if group is created check vgname in:
+```bash
 pvdisplay
-
-//PE smallest unit of storage
-
-//create a logical volume (-L to specify the size, -n to give name)
+```
+#### PE smallest unit of storage
+#### Create a logical volume (-L to specify the size, -n to give name)
+```bash
 lvcreate -L +1.5G -n lvgroup vggroup
-
-// to display logical volume
+```
+#### To display logical volume
+```bash
 lvdisplay
-
-//create a directory where to mount
+```
+#### Create a directory where to mount
+```bash
 mkdir /mnt/lvdir
-
-// to assign a file system
+```
+#### To assign a file system
+```bash
 mkfs -t xfs /dev/vggroup/lvgroup
-
-//go into /etc/fstab 
+```
+#### Go into /etc/fstab 
+```bash
 vim /etc/fstab
-//add line
+```
+#### Add line
+```
 /dev/vggroup/lvgroup  /mnt/lvdir  xfs  defaults 0 0
-
-
-//mount all
+```
+#### Mount all
+```bash
 mount -a
-//reboot
+```
+#### Reboot
+```bash
 reboot
-
-//login to server and check volume group and logical volumn
+```
+#### Login to server and check volume group and logical volume
+```bash
 lsblk
-
-//to delete
-//1) umount 2) //lvremove vgremove pvremove
-
-//lvextend to extend logical volume add space to logical volume
-// -r resize file system -L size
+```
+#### To delete
+1) umount 2) lvremove vgremove pvremove
+#### Lvextend to extend logical volume add space to logical volume
+```bash
+-r resize file system -L size
 lvextend -L +1G -r /dev/vggroup/lvgroup
-
-// forcing the kernel to reread the files
+```
+#### Forcing the kernel to reread the files
+```bash
 partprobe
-
-//to reboot
+```
+#### To reboot
+```bash
 reboot
+```
+#### lvs or lvdisplay to display
+### Practical 5: Additional Commands for Managing Volume Groups and Logical Volumes
 
-//lvs or lvdisplay to display
+#### Extending the Size of a Volume Group and Physical Extents
 
-Prac6:
-//to remove a physical volume from a volume group
-vgreduce volGroupName /dev/vdd1
+1. **Create Volume Group with Specified Physical Extent Size**
+   ```sh
+   vgcreate -s 8M vggroup /dev/vdd1 /dev/vdd2
+   ```
+   **Explanation**: Creates a volume group named `vggroup` with physical extents of 8 MB using disks `/dev/vdd1` and `/dev/vdd2`.
 
-//to rename LVM:
-lvrename volGroupName currLogVolName NewName
-//create 2 partitions choose type Linux LVM
-fdisk /dev/vdb
+2. **Create Logical Volume with Specific Number of Physical Extents**
+   ```sh
+   lvcreate -l 50 -n lvgroup vggroup
+   ```
+   **Explanation**: Creates a logical volume named `lvgroup` in the `vggroup` volume group with 50 physical extents.
 
-// add them to physcial volume
-pvcreate /dev/vdb1 /dev/vdb2 
-// add them to logical volume group
-vgcreate  testvg /dev/vdb1 /dev/vdb2
-// add lvg to logical volume
-lvcreate -L +400M -n testlv testvg
-//assign file system
-mkfs -t xfs /dev/testvg/testlv
-//create a dir and mount
-mkdir /mnt/test
-mount /dev/testvg/testlv /mnt/test
-//enter the logical volume in fstab file
+3. **Extend Logical Volume by Adding More Physical Extents**
+   ```sh
+   lvextend -l +20 /dev/vggroup/lvgroup
+   ```
+   **Explanation**: Extends the logical volume `/dev/vggroup/lvgroup` by adding 20 more physical extents.
+
+#### Additional Commands
+
+1. **lvresize**: Resize an Existing Logical Volume
+   ```sh
+   lvresize -L +1G /dev/vggroup/lvgroup
+   ```
+   **Explanation**: Increases the size of the logical volume `/dev/vggroup/lvgroup` by 1 GB.
+
+2. **lvrename**: Rename a Logical Volume
+   ```sh
+   lvrename /dev/vggroup/lvgroup /dev/vggroup/newname
+   ```
+   **Explanation**: Renames the logical volume from `lvgroup` to `newname`.
+
+3. **lvreduce**: Reduce the Size of a Logical Volume
+   ```sh
+   lvreduce -L -500M /dev/vggroup/lvgroup
+   ```
+   **Explanation**: Decreases the size of the logical volume `/dev/vggroup/lvgroup` by 500 MB.
+
+4. **Create Volume Group with Specified Physical Extent Size**
+   ```sh
+   vgcreate --physicalextentsize 16M yagna /dev/vdd3
+   ```
+   **Explanation**: Creates a volume group named `yagna` with physical extents of 16 MB using disk `/dev/vdd3`.
+
+5. **Create Logical Volume with Specified Number of Physical Extents**
+   ```sh
+   lvcreate -l 20 -n logvol yagna
+   ```
+   **Explanation**: Creates a logical volume named `logvol` in the `yagna` volume group with 20 physical extents.
+
+### Commands and Explanations in Proper Format
+
+#### Task 1: Create Physical Volumes
+```sh
+pvcreate /dev/vdb1 /dev/vdb2 /dev/vdb3
+```
+**Explanation**: Initializes disks `/dev/vdb1`, `/dev/vdb2`, and `/dev/vdb3` as physical volumes for use by LVM.
+
+#### Task 2: Display Physical Volumes
+```sh
+pvdisplay
+```
+**Explanation**: Displays information about the physical volumes.
+
+#### Task 3: Create Volume Group
+```sh
+vgcreate vggroup /dev/vdb1 /dev/vdb2 /dev/vdb3
+```
+**Explanation**: Creates a volume group named `vggroup` using the physical volumes.
+
+#### Task 4: Verify Volume Group Creation
+```sh
+pvdisplay
+```
+**Explanation**: Verifies the volume group creation by displaying physical volume details.
+
+#### Task 5: Create Logical Volume
+```sh
+lvcreate -L +1.5G -n lvgroup vggroup
+```
+**Explanation**: Creates a logical volume named `lvgroup` with a size of 1.5 GB in `vggroup`.
+
+#### Task 6: Display Logical Volumes
+```sh
+lvdisplay
+```
+**Explanation**: Displays information about logical volumes.
+
+#### Task 7: Create Directory for Mounting
+```sh
+mkdir /mnt/lvdir
+```
+**Explanation**: Creates a directory `/mnt/lvdir` for mounting the logical volume.
+
+#### Task 8: Assign File System
+```sh
+mkfs -t xfs /dev/vggroup/lvgroup
+```
+**Explanation**: Creates an XFS file system on `/dev/vggroup/lvgroup`.
+
+#### Task 9: Update `/etc/fstab` for Persistent Mounting
+```sh
 vim /etc/fstab
-//then reboot the server
+```
+**Explanation**: Opens `/etc/fstab` for editing.
 
-//extend the logical volume by 200mb
-lvextend -L +200M -r /dev/testvg/testlv
+**Add the following line**:
+```
+/dev/vggroup/lvgroup /mnt/lvdir xfs defaults 0 0
+```
+**Explanation**: Adds an entry to mount the logical volume at boot.
 
-//we want to add 1.6g of vg
-//create a partition 
-fdisk /dev/vdc 
-pvcreate /dev/vdc1
-//to extend vg
-vgextend testvg /dev/vdc1
-//
-lvextend -L +1G -r /dev/testvg/testlv
+#### Task 10: Mount All Filesystems
+```sh
+mount -a
+```
+**Explanation**: Mounts all filesystems listed in `/etc/fstab`.
 
-//to extend the size of vg and in that PE
-vgcreate -s 8M vggroup /dev/vdd1 /dev/vdd2
-//to create 50 such PE
-lvcreate -l 50 -n lvgroup vggroup
-//to extend to more 20 PE
-lvextend -l +20 /dev/vggroup/lvgroup
-//Guided Exercise not added
+#### Task 11: Reboot the System
+```sh
+reboot
+```
+**Explanation**: Reboots the system to apply changes.
 
-extra 
-1. *lvresize*: With this command, you can resize (shrink or expand) an existing logical volume. It allows you to adjust the size of a logical volume dynamically, provided there is available space in the volume group.
-    
-2. *lvrename*: Used for renaming logical volumes. This command allows you to change the name of a logical volume.
-3. *lvreduce*: Used to reduce the size of a logical volume. It can be used to reclaim unused space from a logical volume and return it to the volume group.
-to give pe size : vgcreate --physicalextentsize 16M /dev/vdd3 -n yagna
-to set amout of pe : lvcreate -l 20 yagna -n logvol
+#### Task 12: Verify Volume Group and Logical Volume
+```sh
+lsblk
+```
+**Explanation**: Lists all block devices, showing volume group and logical volume structure.
+
+#### Task 13: Unmount and Remove Logical Volume, Volume Group, and Physical Volume
+1. **Unmount Logical Volume**:
+   ```sh
+   umount /mnt/lvdir
+   ```
+   **Explanation**: Unmounts the logical volume.
+
+2. **Remove Logical Volume**:
+   ```sh
+   lvremove /dev/vggroup/lvgroup
+   ```
+   **Explanation**: Deletes the logical volume.
+
+3. **Remove Volume Group**:
+   ```sh
+   vgremove vggroup
+   ```
+   **Explanation**: Deletes the volume group.
+
+4. **Remove Physical Volumes**:
+   ```sh
+   pvremove /dev/vdb1 /dev/vdb2 /dev/vdb3
+   ```
+   **Explanation**: Deletes physical volume labels from disks.
+
+#### Task 14: Extend Logical Volume
+```sh
+lvextend -L +1G -r /dev/vggroup/lvgroup
+```
+**Explanation**: Extends the logical volume `/dev/vggroup/lvgroup` by 1 GB and resizes the file system.
+
+#### Task 15: Force Kernel to Reread Partitions
+```sh
+partprobe
+```
+**Explanation**: Instructs the kernel to re-read the partition table.
+
+#### Task 16: Reboot the System
+```sh
+reboot
+```
+**Explanation**: Reboots the system to apply changes.
+
+#### Task 17: Display Logical Volumes
+```sh
+lvs
+```
+**Explanation**: Lists all logical volumes.
+
+#### Task 18: Resize Logical Volume
+```sh
+lvresize -L +1G /dev/vggroup/lvgroup
+```
+**Explanation**: Increases the size of the logical volume `/dev/vggroup/lvgroup` by 1 GB.
+
+#### Task 19: Rename Logical Volume
+```sh
+lvrename /dev/vggroup/lvgroup /dev/vggroup/newname
+```
+**Explanation**: Renames the logical volume from `lvgroup` to `newname`.
+
+#### Task 20: Reduce Logical Volume
+```sh
+lvreduce -L -500M /dev/vggroup/lvgroup
+```
+**Explanation**: Decreases the size of the logical volume `/dev/vggroup/lvgroup` by 500 MB.
+
+#### Task 21: Create Volume Group with Specified Physical Extent Size
+```sh
+vgcreate --physicalextentsize 16M yagna /dev/vdd3
+```
+**Explanation**: Creates a volume group named `yagna` with physical extents of 16 MB using disk `/dev/vdd3`.
+
+#### Task 22: Create Logical Volume with Specified Number of Physical Extents
+```sh
+lvcreate -l 20 -n logvol yagna
+```
+**Explanation**: Creates a logical volume named `logvol` in the `yagna` volume group with 20 physical extents.
 Prac7 : 
 Do this in root workstation prac7
 
